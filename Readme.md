@@ -1,7 +1,7 @@
-<<<<<<< HEAD
+
 # Backend Project With Javascript 🔴
 
-#### [Data Model]()
+#### [DataModel-Link]()
 
 #### [.gitignore-Generator Link](https://mrkandreev.name/snippets/gitignore-generator/)
 
@@ -10,6 +10,7 @@
 #### [NodemonLink](https://www.npmjs.com/package/nodemon)
 
 ####  npm i -D nodemon
-=======
 
->>>>>>> 4f686bbe4905b77b59b80c06e0f4e7927a894a8b
+
+
+
