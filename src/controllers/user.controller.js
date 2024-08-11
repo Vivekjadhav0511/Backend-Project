@@ -5,6 +5,7 @@ import { User } from "../models/user.model.js"
 import { uploadOnCloudinary } from '../utils/cloudinary.js'
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from 'jsonwebtoken'
+import { Subcription } from "../models/subcription.model.js";
 
 
 const generateAccessAndRefreshToken = async (userId) => {
@@ -369,6 +370,81 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 
 })
 
+const getUserChannelProfile = asyncHandler(async (req, res) => {
+   const { username } = req.params
+   if (!username?.trim()) {
+      throw new ApiError(400, "username is missing")
+   }
+
+   const channel = await User.aggregate([
+      {
+         $match: {
+            username: username?.toLowerCase()
+         }
+      },
+      {
+         $lookup: {
+            from: "subcriptions",
+            localField: "_id",
+            foreignField: "Channel",
+            as: "subcribers"
+         }
+      },
+      {
+         $lookup: {
+            from: "subcriptions",
+            localField: "_id",
+            foreignField: "subcriber",
+            as: "subcribedTo"
+         }
+      },
+      {
+         $addFields: {
+            SubcriberCount: {
+               $size: "$subcribers"
+            },
+            channelsSubcribedToCount: {
+               $size: "subcribedTo"
+            },
+            isSubcribed: {
+               $cond: {
+                  if: { $in: [req.user?._id, "$subcribers.subcriber"] },
+                  then: true,
+                  else: false
+               }
+            }
+         }
+      },
+      {
+         $project:{
+            fullName:1,
+            username:1,
+            SubcriberCount:1,
+            channelsSubcribedToCount:1,
+            isSubcribed,
+            avatar:1,
+            coverImage:1,
+            email:1,
+
+         }
+      }
+   ])
+
+   if (!channel?.length) {
+      throw new ApiError(404,"Channel Does Not Exists")
+   }
+
+   return res
+   .status(200)
+   .json(
+      new ApiResponse(
+         200,
+         channel[0],
+         "user Channel fetch Successfully"
+      )
+   )
+})
+
 
 
 export {
@@ -380,5 +456,7 @@ export {
    getuCurrentUser,
    updateAccoutDetails,
    updateUserAvatar,
-   updateUserCoverImage
+   updateUserCoverImage,
+   getUserChannelProfile,
+
 }
