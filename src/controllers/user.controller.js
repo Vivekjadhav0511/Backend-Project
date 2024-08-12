@@ -507,8 +507,8 @@ export {
    changeCurrantPassword,
    getuCurrentUser,
    updateAccoutDetails,
-   updateUserAvatar,
    updateUserCoverImage,
+   updateUserAvatar,
    getUserChannelProfile,
    getWatchHistory
 }
